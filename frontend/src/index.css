@@ -1,119 +1,138 @@
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
-  --primary: 262 83% 57%;
-  --primary-foreground: 0 0% 100%;
-  --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 262 83% 57%;
-  --radius: 0.75rem;
-}
-
-.dark {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
-  --primary: 262 83% 67%;
-  --primary-foreground: 240 10% 3.9%;
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 262 83% 67%;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
   body {
     @apply bg-background text-foreground;
+    font-family: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
   }
-  .theme {
-    --font-heading: var(--font-sans);
-    --font-sans: 'Geist Variable', sans-serif;
-  }
+
+  /* ── LIGHT (default) ────────────────────────────────────────
+     Values are raw HSL channels — tailwind.config.js wraps them
+     in hsl(), e.g. hsl(var(--background)) = hsl(0 0% 100%)      */
   :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+    --primary: 201 100% 36%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 20%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 44%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 20%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 201 100% 36%;
     --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
   }
+
+  /* ── DARK ───────────────────────────────────────────────────── */
   .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
+    --background: 0 0% 12%;
+    --foreground: 0 0% 83%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 83%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 83%;
+    --primary: 201 100% 36%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 83%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 0 0% 20%;
+    --accent-foreground: 0 0% 83%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 201 100% 36%;
   }
-  html {
-    @apply font-sans;
+
+  /* ── MONOKAI ─────────────────────────────────────────────────
+     Background: #272822  Foreground: #F8F8F2  Pink: #F92672
+     Yellow: #E6DB74  Green: #A6E22E  Orange: #FD971F          */
+  .monokai {
+    --background: 66 8% 15%;           /* #272822 */
+    --foreground: 60 30% 96%;          /* #F8F8F2 */
+    --card: 66 8% 18%;
+    --card-foreground: 60 30% 96%;
+    --popover: 66 8% 18%;
+    --popover-foreground: 60 30% 96%;
+    --primary: 338 94% 59%;            /* #F92672 — hot pink */
+    --primary-foreground: 66 8% 15%;
+    --secondary: 66 8% 22%;
+    --secondary-foreground: 60 30% 96%;
+    --muted: 66 8% 22%;
+    --muted-foreground: 60 8% 60%;
+    --accent: 54 70% 67%;              /* #E6DB74 — yellow */
+    --accent-foreground: 66 8% 15%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 60 30% 96%;
+    --border: 66 8% 25%;
+    --input: 66 8% 25%;
+    --ring: 338 94% 59%;
+  }
+
+  /* ── DRACULA ─────────────────────────────────────────────────
+     Background: #282A36  Foreground: #F8F8F2  Purple: #BD93F9
+     Pink: #FF79C6  Cyan: #8BE9FD  Green: #50FA7B             */
+  .dracula {
+    --background: 231 15% 18%;         /* #282A36 */
+    --foreground: 60 30% 96%;          /* #F8F8F2 */
+    --card: 232 14% 22%;
+    --card-foreground: 60 30% 96%;
+    --popover: 232 14% 22%;
+    --popover-foreground: 60 30% 96%;
+    --primary: 265 89% 78%;            /* #BD93F9 — purple */
+    --primary-foreground: 231 15% 18%;
+    --secondary: 232 14% 31%;          /* #44475A */
+    --secondary-foreground: 60 30% 96%;
+    --muted: 232 14% 31%;
+    --muted-foreground: 225 27% 51%;   /* #6272A4 — comment color */
+    --accent: 326 100% 74%;            /* #FF79C6 — pink */
+    --accent-foreground: 231 15% 18%;
+    --destructive: 0 100% 67%;         /* #FF5555 */
+    --destructive-foreground: 60 30% 96%;
+    --border: 232 14% 31%;
+    --input: 232 14% 31%;
+    --ring: 265 89% 78%;
+  }
+
+  /* ── TERMINAL ────────────────────────────────────────────────
+     Classic green-on-black CRT aesthetic                       */
+  .terminal {
+    --background: 0 0% 5%;
+    --foreground: 135 100% 40%;        /* mid green */
+    --card: 0 0% 7%;
+    --card-foreground: 135 100% 40%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 135 100% 40%;
+    --primary: 136 100% 50%;           /* bright green */
+    --primary-foreground: 0 0% 5%;
+    --secondary: 120 32% 9%;
+    --secondary-foreground: 135 100% 40%;
+    --muted: 120 32% 9%;
+    --muted-foreground: 135 60% 28%;
+    --accent: 136 100% 50%;
+    --accent-foreground: 0 0% 5%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 5%;
+    --border: 135 80% 15%;
+    --input: 135 80% 15%;
+    --ring: 136 100% 50%;
   }
 }

@@ -1,0 +1,84 @@
+<svg viewBox="0 0 340 68" xmlns="http://www.w3.org/2000/svg" width="340" height="68">
+  <rect width="340" height="68" fill="#272822"/>
+  <defs>
+    <linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A6E22E" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#A6E22E" stop-opacity="0.85"/>
+    </linearGradient>
+    <filter id="bl"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <!-- Shield -->
+  <path d="M28,3 L48,3 Q53,3 53,8 L53,33 Q53,47 38,55 L28,59 L18,55 Q3,47 3,33 L3,8 Q3,3 8,3 Z"
+    fill="#1e1f1a" stroke="#A6E22E" stroke-width="1.8"/>
+  <path d="M28,6 L45,6 Q49,6 49,10 L49,33 Q49,44 38,51 L28,54 L18,51 Q7,44 7,33 L7,10 Q7,6 11,6 Z"
+    fill="none" stroke="#66D9E8" stroke-width="0.6" opacity="0.45"/>
+
+  <!-- Bolt -->
+  <path d="M26,5 L29,11 L27,11 L30,17 L25,12 L27,12 Z" fill="#E6DB74" filter="url(#bl)"/>
+
+  <!-- Body -->
+  <ellipse cx="28" cy="34" rx="10" ry="12" fill="#75715E"/>
+  <!-- Face -->
+  <ellipse cx="28" cy="27" rx="9" ry="9" fill="#8B7355"/>
+  <ellipse cx="28" cy="28" rx="6" ry="6" fill="#AE9975" opacity="0.65"/>
+  <!-- Cap -->
+  <path d="M19,24 Q28,16 37,24 L35,23 Q28,18 21,23 Z" fill="#1a1b16"/>
+  <rect x="18" y="23" width="20" height="3" rx="1.2" fill="#272822"/>
+  <!-- Eyes -->
+  <ellipse cx="25" cy="26" rx="2.2" ry="2.4" fill="#F8F8F2"/>
+  <ellipse cx="31" cy="26" rx="2.2" ry="2.4" fill="#F8F8F2"/>
+  <circle cx="25.6" cy="26.3" r="1.4" fill="#272822"/>
+  <circle cx="31.6" cy="26.3" r="1.4" fill="#272822"/>
+  <!-- Brows -->
+  <path d="M22.5,24 Q25,23 27,24" stroke="#272822" stroke-width="1" fill="none" stroke-linecap="round"/>
+  <path d="M29,24 Q31,23 33.5,24" stroke="#272822" stroke-width="1" fill="none" stroke-linecap="round"/>
+  <!-- Mouth -->
+  <path d="M25,30 Q28,32.5 31,30" stroke="#49483E" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+  <!-- Ears -->
+  <ellipse cx="19" cy="27" rx="2.8" ry="2.8" fill="#75715E"/>
+  <ellipse cx="19" cy="27" rx="1.7" ry="1.7" fill="#AE9975" opacity="0.6"/>
+  <ellipse cx="37" cy="27" rx="2.8" ry="2.8" fill="#75715E"/>
+  <ellipse cx="37" cy="27" rx="1.7" ry="1.7" fill="#AE9975" opacity="0.6"/>
+  <!-- Arms -->
+  <path d="M18,38 Q14,43 15.5,47" stroke="#75715E" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <path d="M38,38 Q42,43 40.5,47" stroke="#75715E" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <!-- Hands -->
+  <ellipse cx="15.5" cy="48" rx="3.5" ry="2.2" fill="#8B7355"/>
+  <ellipse cx="40.5" cy="48" rx="3.5" ry="2.2" fill="#8B7355"/>
+  <!-- Tail -->
+  <path d="M37,35 Q49,30 47,38 Q45,44 41,42" stroke="#75715E" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+  <!-- Keyboard -->
+  <rect x="13" y="47" width="30" height="9" rx="2" fill="#49483E"/>
+  <rect x="14" y="48" width="28" height="7" rx="1.2" fill="#75715E"/>
+  <rect x="15" y="49" width="5" height="2" rx="0.4" fill="#272822"/>
+  <rect x="21" y="49" width="5" height="2" rx="0.4" fill="#272822"/>
+  <rect x="27" y="49" width="5" height="2" rx="0.4" fill="#272822"/>
+  <rect x="33" y="49" width="5" height="2" rx="0.4" fill="#272822"/>
+  <rect x="15" y="52" width="8" height="2" rx="0.4" fill="#272822"/>
+  <rect x="24" y="52" width="6" height="2" rx="0.4" fill="#272822"/>
+  <rect x="31" y="52" width="7" height="2" rx="0.4" fill="#272822"/>
+  <!-- Speed pixels -->
+  <rect x="6" y="37" width="2.5" height="2.5" fill="#A6E22E" opacity="0.9"/>
+  <rect x="3" y="42" width="2" height="2" fill="#A6E22E" opacity="0.55"/>
+  <rect x="7" y="46" width="1.4" height="1.4" fill="#A6E22E" opacity="0.3"/>
+
+  <!-- Text -->
+  <g transform="translate(66, 10)">
+    <rect x="0" y="14" width="12" height="3" rx="1.2" fill="url(#sg)" opacity="0.75"/>
+    <rect x="0" y="19" width="7" height="2" rx="1" fill="url(#sg)" opacity="0.45"/>
+    <text x="15" y="27"
+      font-family="Impact, 'Haettenschweiler', 'Arial Narrow', sans-serif"
+      font-size="24" font-weight="900" letter-spacing="1.5"
+      fill="#F8F8F2">TURBO</text>
+    <text x="102" y="27"
+      font-family="Impact, 'Haettenschweiler', 'Arial Narrow', sans-serif"
+      font-size="24" font-weight="900" letter-spacing="1.5"
+      fill="#A6E22E">TYPE</text>
+    <text x="15" y="43"
+      font-family="'Courier New', monospace"
+      font-size="8.5" font-weight="700" letter-spacing="3.2"
+      fill="#75715E">BLAZING FAST TYPING</text>
+    <rect x="15" y="46" width="148" height="1.5" rx="0.75" fill="#A6E22E" opacity="0.35"/>
+  </g>
+</svg>

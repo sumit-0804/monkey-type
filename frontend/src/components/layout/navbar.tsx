@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { ModeToggle } from "@/components/mode-toggle"
-import { Keyboard, LogOut, User as UserIcon } from "lucide-react"
+import { LogOut, User as UserIcon } from "lucide-react"
 import { GoogleLogin, googleLogout } from "@react-oauth/google"
 import { useAuthStore } from "@/store/useAuthStore"
 import {
@@ -13,9 +13,25 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useThemeStore } from "@/store/useThemeStore"
+
+import LogoLight from "@/assets/turbotype-light.svg"
+import LogoDark from "@/assets/turbotype-dark.svg"
+import LogoMonokai from "@/assets/turbotype-monokai.svg"
+import LogoDracula from "@/assets/turbotype-dracula.svg"
+import LogoTerminal from "@/assets/turbotype-terminal.svg"
+
+const LOGO_MAP: Record<string, string> = {
+  light: LogoLight,
+  dark: LogoDark,
+  monokai: LogoMonokai,
+  dracula: LogoDracula,
+  terminal: LogoTerminal,
+}
 
 export function Navbar() {
   const { user, isAuthenticated, login, logout, isLoading } = useAuthStore()
+  const { theme } = useThemeStore()
 
   const handleLoginSuccess = async (credentialResponse: any) => {
     if (credentialResponse.credential) {
@@ -32,22 +48,20 @@ export function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 flex h-16 items-center gap-4">
         <div className="flex flex-1 items-center gap-4">
-          <Link to="/" className="flex items-center gap-2 font-bold group group-hover:opacity-90 transition-opacity">
-            <Keyboard className="h-6 w-6 text-primary" />
-            <span className="leading-none tracking-tight text-xl">
-              Campus Type
-            </span>
+          <Link to="/" className="flex items-center group transition-opacity hover:opacity-90">
+            <img 
+              src={LOGO_MAP[theme] || LogoDark} 
+              alt="Turbo Type" 
+              className="h-10 w-auto" 
+            />
           </Link>
           <nav className="flex items-center gap-6 ml-8 text-sm font-medium">
             <Link to="/leaderboard" className="transition-colors hover:text-primary text-foreground/70">Leaderboard</Link>
           </nav>
         </div>
         <div className="flex justify-end gap-3 items-center flex-1">
-          <div className="hidden md:flex text-xs text-muted-foreground mr-2 font-mono border px-2 py-1 rounded-md bg-muted/50">
-            Ctrl K
-          </div>
           <ModeToggle />
-          
+
           {!isLoading ? (
             isAuthenticated && user ? (
               <DropdownMenu>
@@ -76,7 +90,7 @@ export function Navbar() {
               </DropdownMenu>
             ) : (
               <div className="h-[40px] flex items-center">
-                <GoogleLogin 
+                <GoogleLogin
                   onSuccess={handleLoginSuccess}
                   onError={() => console.error('Login Failed')}
                   theme="filled_blue"

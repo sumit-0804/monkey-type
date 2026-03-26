@@ -5,6 +5,8 @@ export interface IUser extends Document {
   name: string;
   avatarUrl: string;
   bio: string;
+  degree?: string;
+  startYear?: number;
   tags: string[];
   isAdmin: boolean;
   isCheater: boolean;
@@ -16,6 +18,8 @@ const UserSchema = new Schema<IUser>(
     name: { type: String, required: true },
     avatarUrl: { type: String, required: true },
     bio: { type: String, default: "" },
+    degree: { type: String },
+    startYear: { type: Number },
     tags: { type: [String], default: [] },
     isAdmin: { type: Boolean, default: false },
     isCheater: { type: Boolean, default: false },

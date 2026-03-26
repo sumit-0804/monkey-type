@@ -7,6 +7,9 @@ interface User {
   email: string;
   avatarUrl: string;
   bio: string;
+  degree?: string;
+  startYear?: number;
+  createdAt: string;
 }
 
 interface AuthState {
@@ -16,6 +19,7 @@ interface AuthState {
   login: (credential: string) => Promise<void>;
   logout: () => Promise<void>;
   fetchSession: () => Promise<void>;
+  updateProfile: (bio: string) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -48,6 +52,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ user: null, isAuthenticated: false });
     } finally {
       set({ isLoading: false });
+    }
+  },
+  updateProfile: async (bio: string) => {
+    try {
+      const { data } = await api.put('/users/profile', { bio });
+      set({ user: data });
+    } catch (error) {
+      console.error('Update profile failed', error);
+      throw error;
     }
   },
 }));

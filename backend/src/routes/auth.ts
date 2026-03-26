@@ -12,7 +12,7 @@ router.post("/google", async (req: Request, res: Response) => {
   try {
     // Expected frontend to send credential (id token)
     const { credential } = req.body;
-    
+
     if (!credential) {
       res.status(400).json({ message: "No credential provided" });
       return;
@@ -30,7 +30,7 @@ router.post("/google", async (req: Request, res: Response) => {
     }
 
     const { sub, email, name, picture } = payload;
-    
+
     if (!email) {
       res.status(400).json({ message: "Email not found in Google profile" });
       return;
@@ -43,29 +43,43 @@ router.post("/google", async (req: Request, res: Response) => {
     // }
 
     let user = await User.findOne({ email });
+    const emailPrefix = email.split("@")[0] || "";
+    const yearMatch = emailPrefix.match(/^(\d{4})(\d{2})\d{3}$/);
     
+    let degree = "";
+    let startYear = 0;
+    
+    if (yearMatch) {
+      startYear = parseInt(yearMatch[1] || "0");
+      const code = parseInt(yearMatch[2] || "0");
+      if (code >= 1 && code <= 9) {
+        degree = "Bachelors";
+      } else if (code >= 11 && code <= 30) {
+        degree = "Masters";
+      }
+    }
+
     if (!user) {
       user = new User({
         email,
-        name,
-        avatarUrl: picture,
+        name: name || "User",
+        avatarUrl: picture || "",
+        degree,
+        startYear,
       });
       await user.save();
     } else {
-      // update user profile picture/name slightly on relogin
       user.name = name || user.name;
       user.avatarUrl = picture || user.avatarUrl;
+      if (!user.degree && degree) user.degree = degree;
+      if (!user.startYear && startYear) user.startYear = startYear;
       await user.save();
     }
-
-    // Generate JWT token
     const token = jwt.sign(
       { id: user._id, email: user.email },
       process.env.JWT_SECRET as string,
       { expiresIn: "7d" }
     );
-
-    // Set cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

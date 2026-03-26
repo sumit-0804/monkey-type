@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   CommandDialog,
   CommandEmpty,
@@ -9,25 +9,21 @@ import {
   CommandSeparator,
 } from "@/components/ui/command"
 import { useNavigate } from "react-router-dom"
-import { Monitor, Moon, Sun, Trophy, User, Home } from "lucide-react"
-import { useTheme } from "next-themes"
+import { MonitorIcon, Moon, Sun, Trophy, User, Home, Palette } from "lucide-react"
+import { useThemeStore, THEMES } from "@/store/useThemeStore"
+
+const THEME_ICONS: Record<string, React.ReactNode> = {
+  light:    <Sun className="mr-2 h-4 w-4" />,
+  dark:     <Moon className="mr-2 h-4 w-4" />,
+  monokai:  <Palette className="mr-2 h-4 w-4" />,
+  dracula:  <Palette className="mr-2 h-4 w-4" />,
+  terminal: <MonitorIcon className="mr-2 h-4 w-4" />,
+}
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
-  const { setTheme } = useTheme()
-
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((open) => !open)
-      }
-    }
-
-    document.addEventListener("keydown", down)
-    return () => document.removeEventListener("keydown", down)
-  }, [])
+  const { setTheme } = useThemeStore()
 
   const runCommand = (command: () => void) => {
     setOpen(false)
@@ -35,6 +31,7 @@ export function CommandPalette() {
   }
 
   return (
+
     <CommandDialog open={open} onOpenChange={setOpen}>
       <CommandInput placeholder="Type a command or search..." />
       <CommandList>
@@ -55,18 +52,15 @@ export function CommandPalette() {
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Theme">
-          <CommandItem onSelect={() => runCommand(() => setTheme("light"))}>
-            <Sun className="mr-2 h-4 w-4" />
-            <span>Light Mode</span>
-          </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => setTheme("dark"))}>
-            <Moon className="mr-2 h-4 w-4" />
-            <span>Dark Mode</span>
-          </CommandItem>
-          <CommandItem onSelect={() => runCommand(() => setTheme("system"))}>
-            <Monitor className="mr-2 h-4 w-4" />
-            <span>System</span>
-          </CommandItem>
+          {THEMES.map(({ name, label }) => (
+            <CommandItem
+              key={name}
+              onSelect={() => runCommand(() => setTheme(name))}
+            >
+              {THEME_ICONS[name]}
+              <span>{label}</span>
+            </CommandItem>
+          ))}
         </CommandGroup>
       </CommandList>
     </CommandDialog>

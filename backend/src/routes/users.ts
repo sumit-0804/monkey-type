@@ -41,4 +41,18 @@ router.put("/profile", authenticate, async (req: AuthRequest, res: Response) => 
   }
 });
 
+router.get("/:userId", async (req: Request | any, res: Response) => {
+  try {
+    const user = await User.findById(req.params.userId).select("-email -isAdmin");
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;
