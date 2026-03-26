@@ -21,12 +21,26 @@ import LogoMonokai from "@/assets/turbotype-monokai.svg"
 import LogoDracula from "@/assets/turbotype-dracula.svg"
 import LogoTerminal from "@/assets/turbotype-terminal.svg"
 
+import MobileLogoLight from "@/assets/turbotype-mobile-light.svg"
+import MobileLogoDark from "@/assets/turbotype-mobile-dark.svg"
+import MobileLogoMonokai from "@/assets/turbotype-mobile-monokai.svg"
+import MobileLogoDracula from "@/assets/turbotype-mobile-dracula.svg"
+import MobileLogoTerminal from "@/assets/turbotype-mobile-terminal.svg"
+
 const LOGO_MAP: Record<string, string> = {
   light: LogoLight,
   dark: LogoDark,
   monokai: LogoMonokai,
   dracula: LogoDracula,
   terminal: LogoTerminal,
+}
+
+const MOBILE_LOGO_MAP: Record<string, string> = {
+  light: MobileLogoLight,
+  dark: MobileLogoDark,
+  monokai: MobileLogoMonokai,
+  dracula: MobileLogoDracula,
+  terminal: MobileLogoTerminal,
 }
 
 export function Navbar() {
@@ -52,7 +66,12 @@ export function Navbar() {
             <img 
               src={LOGO_MAP[theme] || LogoDark} 
               alt="Turbo Type" 
-              className="h-10 w-auto" 
+              className="h-10 w-auto hidden md:block" 
+            />
+            <img 
+              src={MOBILE_LOGO_MAP[theme] || MobileLogoDark} 
+              alt="Turbo Type" 
+              className="h-12 w-auto block md:hidden" 
             />
           </Link>
           <nav className="flex items-center gap-6 ml-8 text-sm font-medium">
