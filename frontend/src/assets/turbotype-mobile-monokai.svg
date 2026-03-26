@@ -1,0 +1,61 @@
+<svg viewBox="0 0 56 64" xmlns="http://www.w3.org/2000/svg" width="56" height="64">
+  <rect width="56" height="64" fill="#272822"/>
+  <defs>
+    <filter id="bl"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <!-- Shield -->
+  <path d="M28,2 L50,2 Q54,2 54,6 L54,36 Q54,52 38,60 L28,63 L18,60 Q2,52 2,36 L2,6 Q2,2 6,2 Z"
+    fill="#1e1f1a" stroke="#A6E22E" stroke-width="1.8"/>
+  <path d="M28,5 L47,5 Q51,5 51,9 L51,36 Q51,50 38,57 L28,60 L18,57 Q5,50 5,36 L5,9 Q5,5 9,5 Z"
+    fill="none" stroke="#66D9E8" stroke-width="0.6" opacity="0.4"/>
+
+  <!-- Bolt -->
+  <path d="M26,4 L30,11 L27,11 L31,18 L25,13 L28,13 Z" fill="#E6DB74" filter="url(#bl)"/>
+
+  <!-- Body -->
+  <ellipse cx="28" cy="40" rx="11" ry="13" fill="#75715E"/>
+  <!-- Face -->
+  <ellipse cx="28" cy="30" rx="10" ry="10" fill="#8B7355"/>
+  <ellipse cx="28" cy="31" rx="6.5" ry="6.5" fill="#AE9975" opacity="0.65"/>
+  <!-- Cap -->
+  <path d="M18,27 Q28,18 38,27 L36,26 Q28,20 20,26 Z" fill="#1a1b16"/>
+  <rect x="17" y="26" width="22" height="3.5" rx="1.5" fill="#272822"/>
+  <!-- Eyes -->
+  <ellipse cx="24.5" cy="28.5" rx="2.5" ry="2.7" fill="#F8F8F2"/>
+  <ellipse cx="31.5" cy="28.5" rx="2.5" ry="2.7" fill="#F8F8F2"/>
+  <circle cx="25.1" cy="28.8" r="1.6" fill="#272822"/>
+  <circle cx="32.1" cy="28.8" r="1.6" fill="#272822"/>
+  <!-- Brows -->
+  <path d="M22,26.5 Q24.5,25.5 27,26.5" stroke="#272822" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <path d="M29,26.5 Q31.5,25.5 34,26.5" stroke="#272822" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <!-- Mouth -->
+  <path d="M24.5,33.5 Q28,36.5 31.5,33.5" stroke="#49483E" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+  <!-- Ears -->
+  <ellipse cx="18" cy="30" rx="3.2" ry="3.2" fill="#75715E"/>
+  <ellipse cx="18" cy="30" rx="2" ry="2" fill="#AE9975" opacity="0.6"/>
+  <ellipse cx="38" cy="30" rx="3.2" ry="3.2" fill="#75715E"/>
+  <ellipse cx="38" cy="30" rx="2" ry="2" fill="#AE9975" opacity="0.6"/>
+  <!-- Arms -->
+  <path d="M17,43 Q13,48 14.5,52" stroke="#75715E" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M39,43 Q43,48 41.5,52" stroke="#75715E" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Hands -->
+  <ellipse cx="15.5" cy="53" rx="4" ry="2.5" fill="#8B7355"/>
+  <ellipse cx="41.5" cy="53" rx="4" ry="2.5" fill="#8B7355"/>
+  <!-- Tail -->
+  <path d="M39,39 Q51,34 49,43 Q47,49 43,47" stroke="#75715E" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <!-- Keyboard -->
+  <rect x="11" y="52" width="34" height="10" rx="2.5" fill="#49483E"/>
+  <rect x="12" y="53" width="32" height="8" rx="1.5" fill="#75715E"/>
+  <rect x="13" y="54.5" width="6" height="2.2" rx="0.5" fill="#272822"/>
+  <rect x="20" y="54.5" width="6" height="2.2" rx="0.5" fill="#272822"/>
+  <rect x="27" y="54.5" width="6" height="2.2" rx="0.5" fill="#272822"/>
+  <rect x="34" y="54.5" width="6" height="2.2" rx="0.5" fill="#272822"/>
+  <rect x="13" y="57.5" width="9" height="2.2" rx="0.5" fill="#272822"/>
+  <rect x="23" y="57.5" width="7" height="2.2" rx="0.5" fill="#272822"/>
+  <rect x="31" y="57.5" width="9" height="2.2" rx="0.5" fill="#272822"/>
+  <!-- Speed pixels -->
+  <rect x="5"  y="42" width="3" height="3" fill="#A6E22E" opacity="0.9"/>
+  <rect x="2"  y="47" width="2.2" height="2.2" fill="#A6E22E" opacity="0.55"/>
+  <rect x="6"  y="51" width="1.5" height="1.5" fill="#A6E22E" opacity="0.3"/>
+</svg>
