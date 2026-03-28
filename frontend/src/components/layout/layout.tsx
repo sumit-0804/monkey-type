@@ -7,7 +7,7 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="relative flex min-h-screen flex-col bg-background font-sans">
       <Navbar />
       <CommandPalette />
-      <main className="flex-1 w-full flex justify-center mt-8">
+      <main className="flex-1 w-full flex justify-center">
         <div className="container max-w-5xl px-4">
           {children}
         </div>
