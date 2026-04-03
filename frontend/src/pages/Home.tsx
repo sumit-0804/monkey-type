@@ -9,6 +9,7 @@ import { RotateCcw, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { api } from '@/lib/axios';
+import { toast } from 'sonner';
 
 export default function Home() {
   const [configMode, setConfigMode] = useState<ConfigMode>('normal');
@@ -35,7 +36,7 @@ export default function Home() {
         numbers: numbers,
         wordCount: testType === 'time' ? 300 : wordCount,
       };
-      
+
       const text = await fetchGeneratedText(opts);
       setCurrentText(text);
     } catch (error) {
@@ -59,15 +60,21 @@ export default function Home() {
         await api.post('/results', {
           wpm: stats.wpm,
           accuracy: stats.accuracy,
-          mode: configMode === 'code' ? 'code' : testType,
+          mode: configMode === 'code' ? 'code' : 'normal',
+          testType: configMode === 'code' ? 'words' : testType,
+          testAmount: configMode === 'code' ? stats.totalChars : (testType === 'time' ? timeLimit : wordCount),
+          punctuation,
+          numbers,
           language: configMode === 'code' ? codeLanguage : undefined,
           timeElapsed: Math.floor(stats.timeElapsed),
         });
+        toast.success('Result saved to leaderboard!');
       } catch (error) {
         console.error('Failed to save test result:', error);
+        toast.error('Failed to save result to leaderboard');
       }
     }
-  }, [isAuthenticated, configMode, testType, codeLanguage]);
+  }, [isAuthenticated, configMode, testType, codeLanguage, timeLimit, wordCount]);
 
   const engineProps = useMemo(() => ({
     text: currentText,
@@ -95,7 +102,7 @@ export default function Home() {
       const missed = finalStats.wordResults
         .filter(w => !w.isCorrect)
         .map(w => w.word);
-      
+
       if (missed.length > 0) {
         // Repeat missed words until we have enough to fill a test or just the missed ones
         let practiceText = missed.join(' ');
@@ -108,7 +115,7 @@ export default function Home() {
       }
     }
     // 'repeat' maintains currentText
-    
+
     reset();
     setShowStats(false);
     setFinalStats(null);
@@ -140,7 +147,7 @@ export default function Home() {
 
   if (showStats && finalStats) {
     return (
-      <StatsView 
+      <StatsView
         stats={finalStats}
         text={currentText}
         mode={configMode === 'code' ? 'code' : testType}
@@ -204,7 +211,7 @@ export default function Home() {
               </div>
             </div>
           )}
-          
+
           <TypingArea
             characterStates={characterStates}
             cursor={cursor}

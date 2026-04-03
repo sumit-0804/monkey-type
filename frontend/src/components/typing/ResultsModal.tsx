@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import type { TypingStats } from '@/hooks/useTypingEngine';
 import { Trophy, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/store/useAuthStore';
+import { api } from '@/lib/axios';
 
 interface ResultsModalProps {
   open: boolean;
@@ -37,6 +39,7 @@ export interface TestResult {
 export function ResultsModal({ open, stats, mode, testConfig, onClose, onReset }: ResultsModalProps) {
   const [name, setName] = useState('');
   const [saved, setSaved] = useState(false);
+  const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     if (open && stats.wpm > 0) {
@@ -79,6 +82,36 @@ export function ResultsModal({ open, stats, mode, testConfig, onClose, onReset }
     // Save username
     localStorage.setItem('turbo-type-username', name);
 
+    const testResultData = {
+      wpm: stats.wpm,
+      accuracy: stats.accuracy,
+      mode: mode === 'code' ? 'code' : 'normal',
+      testType: mode === 'code' ? 'words' : mode, // handle code mode as words or its own thing
+      testAmount: mode === 'time' ? (testConfig.timeLimit || 0) : (testConfig.wordCount || 0),
+      punctuation: testConfig.punctuation,
+      numbers: testConfig.numbers,
+      language: testConfig.language,
+      timeElapsed: stats.timeElapsed,
+    };
+
+    // If authenticated, save to backend
+    if (isAuthenticated) {
+      api.post('/results', testResultData)
+        .then(() => {
+           setSaved(true);
+           toast.success('Result saved to your profile!');
+        })
+        .catch((err) => {
+           console.error('Failed to save to backend:', err);
+           toast.error('Failed to save to profile, but saved locally.');
+           saveLocally();
+        });
+    } else {
+      saveLocally();
+    }
+  };
+
+  const saveLocally = () => {
     // Save result to leaderboard
     const results: TestResult[] = JSON.parse(localStorage.getItem('turbo-type-results') || '[]');
     const newResult: TestResult = {
@@ -100,7 +133,7 @@ export function ResultsModal({ open, stats, mode, testConfig, onClose, onReset }
     localStorage.setItem('turbo-type-results', JSON.stringify(top100));
 
     setSaved(true);
-    toast.success('Result saved to leaderboard!');
+    toast.success('Result saved to local leaderboard!');
   };
 
   const handleNextTest = () => {

@@ -9,9 +9,9 @@ const router = Router();
 // POST /api/results - Save a new test result
 router.post("/", authenticate, async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const { wpm, accuracy, mode, language, timeElapsed } = req.body;
+    const { wpm, accuracy, mode, testType, testAmount, punctuation, numbers, language, timeElapsed } = req.body;
 
-    if (wpm === undefined || accuracy === undefined || !mode || timeElapsed === undefined) {
+    if (wpm === undefined || accuracy === undefined || !mode || !testType || testAmount === undefined) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -20,6 +20,10 @@ router.post("/", authenticate, async (req: AuthRequest, res: Response): Promise<
       wpm,
       accuracy,
       mode,
+      testType,
+      testAmount,
+      punctuation,
+      numbers,
       language,
       timeElapsed,
     });
@@ -80,6 +84,36 @@ router.get("/stats/:userId", async (req: Request | any, res: Response) => {
     });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// GET /api/results/leaderboard - Fetch global leaderboard with filters
+router.get("/leaderboard", async (req: Request, res: Response) => {
+  try {
+    const { mode, testType, testAmount, punctuation, numbers, language } = req.query;
+
+    const query: any = {};
+    if (mode) query.mode = mode;
+    if (testType) query.testType = testType;
+    if (testAmount && Number(testAmount) !== 0) query.testAmount = Number(testAmount);
+    
+    // Default to standard tests (no punctuation/numbers) for normal mode
+    if (mode === "normal") {
+      query.punctuation = false;
+      query.numbers = false;
+    }
+    
+    if (language) query.language = language;
+
+    const leaderboard = await TestResult.find(query)
+      .sort({ wpm: -1 })
+      .limit(50)
+      .populate("user", "name avatarUrl");
+
+    res.json(leaderboard);
+  } catch (error) {
+    console.error("Error fetching leaderboard:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
