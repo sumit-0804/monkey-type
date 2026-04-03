@@ -22,16 +22,18 @@ router.get("/me", authenticate, async (req: AuthRequest, res: Response) => {
 
 router.put("/profile", authenticate, async (req: AuthRequest, res: Response) => {
   try {
-    const { bio } = req.body;
+    const { bio, name, avatarUrl, degree, startYear } = req.body;
     const user = await User.findById(req.user.id);
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
     }
     
-    if (typeof bio === "string") {
-      user.bio = bio;
-    }
+    if (typeof bio === "string") user.bio = bio;
+    if (typeof name === "string") user.name = name;
+    if (typeof avatarUrl === "string") user.avatarUrl = avatarUrl;
+    if (typeof degree === "string") user.degree = degree;
+    if (typeof startYear === "number") user.startYear = startYear;
     
     await user.save();
     res.json(user);

@@ -6,6 +6,7 @@ export interface ITestResult extends Document {
   accuracy: number;
   mode: string;
   language?: string;
+  timeElapsed: number;
   createdAt: Date;
 }
 
@@ -16,6 +17,7 @@ const TestResultSchema = new Schema<ITestResult>(
     accuracy: { type: Number, required: true },
     mode: { type: String, required: true },
     language: { type: String },
+    timeElapsed: { type: Number, required: true, default: 0 },
   },
   { timestamps: true }
 );

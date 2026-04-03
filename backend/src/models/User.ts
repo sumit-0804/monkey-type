@@ -16,7 +16,7 @@ const UserSchema = new Schema<IUser>(
   {
     email: { type: String, required: true, unique: true, index: true },
     name: { type: String, required: true },
-    avatarUrl: { type: String, required: true },
+    avatarUrl: { type: String, default: "" },
     bio: { type: String, default: "" },
     degree: { type: String },
     startYear: { type: Number },
