@@ -29,22 +29,26 @@ export function TypingArea({
   const showCursor = status !== 'finished';
   const isTyping = status === 'running';
 
-  // Group characters into words for better wrapping
-  const words: { chars: CharacterState[]; startIndex: number }[] = useMemo(() => {
-    const result: { chars: CharacterState[]; startIndex: number }[] = [];
+  // Group characters into words for better wrapping, and handle newlines as word breaks
+  const words: { chars: CharacterState[]; startIndex: number; endsWithNewline: boolean }[] = useMemo(() => {
+    const result: { chars: CharacterState[]; startIndex: number; endsWithNewline: boolean }[] = [];
     let currentWord: CharacterState[] = [];
     let startIndex = 0;
 
     characterStates.forEach((cs, idx) => {
       currentWord.push(cs);
-      if (cs.char === ' ') {
-        result.push({ chars: currentWord, startIndex: startIndex });
+      if (cs.char === ' ' || cs.char === '\n') {
+        result.push({ 
+          chars: currentWord, 
+          startIndex: startIndex, 
+          endsWithNewline: cs.char === '\n' 
+        });
         currentWord = [];
         startIndex = idx + 1;
       }
     });
     if (currentWord.length > 0) {
-      result.push({ chars: currentWord, startIndex: startIndex });
+      result.push({ chars: currentWord, startIndex: startIndex, endsWithNewline: false });
     }
     return result;
   }, [characterStates]);
@@ -59,14 +63,19 @@ export function TypingArea({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isCodeMode && e.key === 'Tab') {
+      if (e.key === 'Tab') {
         e.preventDefault();
+      }
+      
+      // In code mode, Enter should trigger a newline
+      if (isCodeMode && e.key === 'Enter' && status !== 'finished') {
+        onInput(typed + '\n');
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isCodeMode]);
+  }, [isCodeMode, onInput, typed, status]);
 
   // Handle scrolling logic
   useEffect(() => {
@@ -108,8 +117,10 @@ export function TypingArea({
 
   const renderCharacter = (charState: CharacterState, globalIndex: number) => {
     const isActive = globalIndex === cursor && showCursor;
-    const char = charState.char === ' ' ? '\u00A0' : charState.char;
-    const isSpace = charState.char === ' ';
+    
+    let displayChar = charState.char;
+    if (charState.char === ' ') displayChar = '\u00A0';
+    if (charState.char === '\n') displayChar = '↵';
 
     return (
       <span
@@ -121,10 +132,11 @@ export function TypingArea({
           charState.status === 'incorrect' && 'text-red-500 bg-red-500/10 rounded-sm',
           charState.status === 'extra' && 'text-red-400 opacity-80',
           charState.status === 'pending' && 'text-muted-foreground/30',
-          isSpace && charState.status === 'incorrect' && 'bg-red-500/40 rounded-sm mx-0.5',
+          charState.char === ' ' && charState.status === 'incorrect' && 'bg-red-500/40 rounded-sm mx-0.5',
+          charState.char === '\n' && 'text-muted-foreground/20'
         )}
       >
-        {char}
+        {displayChar}
       </span>
     );
   };
@@ -146,18 +158,19 @@ export function TypingArea({
 
       <div
         className={cn(
-          'select-none cursor-text px-6 overflow-hidden flex items-start justify-center transition-all duration-500',
+          'select-none cursor-text px-6 overflow-hidden flex items-start transition-all duration-500',
           !isTyping && 'opacity-90 scale-[0.99]',
-          isTyping && 'scale-100'
+          isTyping && 'scale-100',
+          isCodeMode ? "justify-start" : "justify-center"
         )}
-        style={{ height: `${lineHeight * 3}px`, paddingTop: `${(lineHeight * 3 - lineHeight * 3) / 2}px` }}
+        style={{ height: `${lineHeight * 3}px` }}
         onClick={() => inputRef.current?.focus()}
       >
         <div 
           ref={containerRef}
           className={cn(
             "flex flex-wrap max-w-5xl transition-all duration-500 ease-in-out relative pt-2",
-            isCodeMode ? "font-mono text-2xl gap-y-4" : "text-4xl gap-y-4 justify-center"
+            isCodeMode ? "font-mono text-xl gap-y-1" : "text-4xl gap-y-4 justify-center"
           )}
           style={{
             transform: `translateY(-${Math.max(0, lineIndex - 1) * lineHeight}px)`
@@ -169,7 +182,10 @@ export function TypingArea({
               <div 
                 key={wordIdx} 
                 ref={(el) => { if (el) wordsRef.current[wordIdx] = el; }}
-                className="inline-flex flex-nowrap"
+                className={cn(
+                  "inline-flex flex-nowrap",
+                  word.endsWithNewline && "w-full" // Force wrap after a newline
+                )}
               >
                 {word.chars.map((cs, charIdx) => {
                   return renderCharacter(cs, globalCharIndex + charIdx);

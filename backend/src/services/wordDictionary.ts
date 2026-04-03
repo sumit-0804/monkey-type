@@ -1,8 +1,3 @@
-import { api } from './axios';
-
-export type TestMode = 'time' | 'words';
-export type CodeLanguage = 'javascript' | 'python' | 'java' | 'cpp' | 'c' | 'go';
-
 const words = [
   "the", "be", "to", "of", "and", "a", "in", "that", "have", "I",
   "it", "for", "not", "on", "with", "he", "as", "you", "do", "at",
@@ -47,46 +42,61 @@ const words = [
   "many", "few", "other", "some", "every", "all", "more", "most", "same", "different",
   "small", "large", "high", "low", "long", "short", "old", "young", "new", "early",
   "late", "good", "bad", "big", "little", "right", "wrong", "next", "last", "main",
-  "even", "only", "also", "just", "very", "too", "back", "well", "down", "up",
+  "even", "only", "also", "just", "very", "too", "back", "well", "down", "up"
 ];
 
 const punctuationMarks = [",", ".", "!", "?", ";", ":", "'", '"', "-", "(", ")", "[", "]"];
 const numberChars = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
-export function generateText(
-  wordCount: number,
-  includePunctuation: boolean,
-  includeNumbers: boolean
+/**
+ * Generates normal typing text from an in-memory dictionary.
+ * Does not make any external API calls.
+ */
+export function generateFromDictionary(
+  wordCount: number = 50,
+  includePunctuation: boolean = false,
+  includeNumbers: boolean = false
 ): string {
   const result: string[] = [];
 
   for (let i = 0; i < wordCount; i++) {
+    // Pick random word
     let word = words[Math.floor(Math.random() * words.length)];
+    if (!word) word = "the"; // Type safety fallback
 
-    // Add numbers randomly within words
+    // Add numbers randomly within words (20% chance if enabled)
     if (includeNumbers && Math.random() < 0.2) {
       const numCount = Math.floor(Math.random() * 3) + 1;
-      const numberStr = Array.from({ length: numCount }, () =>
-        numberChars[Math.floor(Math.random() * numberChars.length)]
-      ).join('');
-      word = word + numberStr;
+      const numberStr = Array.from({ length: numCount }, () => {
+        const char = numberChars[Math.floor(Math.random() * numberChars.length)];
+        return char || "1";
+      }).join('');
+      // Decide whether to append, prepend, or just use the number
+      const pos = Math.random();
+      if (pos < 0.33) {
+        word = numberStr; // replace word entirely with number occasionally
+      } else if (pos < 0.66) {
+        word = word + numberStr;
+      } else {
+        word = numberStr + word;
+      }
     }
 
-    // Add punctuation
+    // Add punctuation if enabled
     if (includePunctuation) {
       // Capitalize first letter of sentence
-      if (i === 0 || (i > 0 && ['.', '!', '?'].some(p => result[i - 1].includes(p)))) {
+      if (i === 0 || (i > 0 && ['.', '!', '?'].some(p => result[i - 1]?.includes(p)))) {
         if (!/^[A-Z]/.test(word)) {
           word = word.charAt(0).toUpperCase() + word.slice(1);
         }
       }
 
-      // Add punctuation at end of word
+      // Add punctuation at end of word (15% chance)
       if (Math.random() < 0.15) {
-        const punct = punctuationMarks[Math.floor(Math.random() * punctuationMarks.length)];
+        const punct = punctuationMarks[Math.floor(Math.random() * punctuationMarks.length)] || ".";
         word = word + punct;
       } else if ((i + 1) % 10 === 0 && i !== wordCount - 1) {
-        // Add period every ~10 words
+        // Add a period roughly every 10 words if we haven't added punctuation
         word = word + '.';
       }
     }
@@ -94,62 +104,14 @@ export function generateText(
     result.push(word);
   }
 
-  return result.join(' ');
-}
-
-const codeSnippets: Record<CodeLanguage, string[]> = {
-  javascript: [
-    `function calculateSum(arr) {\n    return arr.reduce((acc, num) => acc + num, 0);\n}\n\nconst numbers = [1, 2, 3, 4, 5];\nconsole.log(calculateSum(numbers));`,
-    `const fetchData = async (url) => {\n    try {\n        const response = await fetch(url);\n        const data = await response.json();\n        return data;\n    } catch (error) {\n        console.error('Error:', error);\n    }\n};`,
-  ],
-  python: [
-    `def calculate_sum(numbers):\n    return sum(numbers)\n\nresult = calculate_sum([1, 2, 3, 4, 5])\nprint(result)`,
-    `class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        pass\n\nclass Dog(Animal):\n    def speak(self):\n        return "Woof!"`,
-  ],
-  java: [
-    `public class HelloWorld {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`,
-  ],
-  cpp: [
-    `#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello World" << endl;\n    return 0;\n}`,
-  ],
-  c: [
-    `#include <stdio.h>\n\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}`,
-  ],
-  go: [
-    `package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello, World!")\n}`,
-  ],
-};
-
-export function getCodeSnippet(language: CodeLanguage): string {
-  const snippets = codeSnippets[language] || codeSnippets.javascript;
-  return snippets[Math.floor(Math.random() * snippets.length)];
-}
-
-export interface FetchTextOptions {
-  mode: 'normal' | 'code';
-  language?: CodeLanguage;
-  punctuation?: boolean;
-  numbers?: boolean;
-  wordCount?: number;
-}
-
-export async function fetchGeneratedText(opts: FetchTextOptions): Promise<string> {
-  try {
-    const params = new URLSearchParams();
-    params.set('mode', opts.mode);
-    if (opts.language) params.set('language', opts.language);
-    if (opts.punctuation !== undefined) params.set('punctuation', String(opts.punctuation));
-    if (opts.numbers !== undefined) params.set('numbers', String(opts.numbers));
-    if (opts.wordCount) params.set('wordCount', String(opts.wordCount));
-
-    const response = await api.get(`/typing/content?${params.toString()}`);
-    return response.data.text;
-  } catch (error) {
-    console.error('Failed to fetch text from backend:', error);
-    // Fallback to local generation
-    if (opts.mode === 'code') {
-      return getCodeSnippet(opts.language || 'javascript');
+  // Ensure last word has a period if punctuation is enabled
+  if (includePunctuation && result.length > 0) {
+    const lastWord = result[result.length - 1];
+    if (lastWord && !['.', '!', '?'].some(p => lastWord.includes(p))) {
+       // Replace any trailing punctuation with a period
+       result[result.length - 1] = lastWord.replace(/[,;:'"\-\(\)\[\]]+$/, '') + '.';
     }
-    return generateText(opts.wordCount || 50, opts.punctuation || false, opts.numbers || false);
   }
+
+  return result.join(' ');
 }

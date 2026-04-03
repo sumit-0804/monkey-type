@@ -49,9 +49,10 @@ interface UseTypingEngineProps {
   mode: 'time' | 'words';
   timeLimit?: number; // in seconds
   onComplete: (stats: TypingStats) => void;
+  isCodeMode?: boolean;
 }
 
-export function useTypingEngine({ text, mode, timeLimit, onComplete }: UseTypingEngineProps) {
+export function useTypingEngine({ text, mode, timeLimit, onComplete, isCodeMode = false }: UseTypingEngineProps) {
   const [typed, setTyped] = useState<string>('');
   const [status, setStatus] = useState<TypingStatus>('idle');
   const [startTime, setStartTime] = useState<number | null>(null);
@@ -100,6 +101,8 @@ export function useTypingEngine({ text, mode, timeLimit, onComplete }: UseTyping
   // Helper to calculate momentary stats (internal use)
   const calculateResultStats = useCallback((currentTyped: string, currentTotalTime: number, currentChartData: WpmDataPoint[], currentKeystrokes: KeystrokeLog[]): TypingStats => {
     const currentText = textRef.current;
+    // For WPM calculation, we only count CORRECT non-whitespace characters or similar logic
+    // Actually standard WPM is (correct chars / 5) / minutes
     const finalCorrectChars = currentTyped.split('').filter((char, idx) => idx < currentText.length && char === currentText[idx]).length;
     const missedChars = Math.max(0, currentText.length - currentTyped.length);
 
@@ -124,8 +127,8 @@ export function useTypingEngine({ text, mode, timeLimit, onComplete }: UseTyping
     }
 
     // Word analysis
-    const originalWords = currentText.split(' ');
-    const typedWords = currentTyped.split(' ');
+    const originalWords = currentText.split(/\s+/);
+    const typedWords = currentTyped.split(/\s+/);
     const wordResults: WordResult[] = originalWords.map((word, i) => {
       const typedWord = typedWords[i] || '';
       return {
@@ -177,7 +180,6 @@ export function useTypingEngine({ text, mode, timeLimit, onComplete }: UseTyping
         if (second > lastSecondRef.current) {
           const currentStats = calculateResultStats(typedRef.current, elapsed, chartDataRef.current, keystrokesRef.current);
           
-          // Deriving errors from keystrokes is more robust than a mutable ref
           const startMs = lastSecondRef.current * 1000;
           const endMs = second * 1000;
           const errorsInSecond = keystrokesRef.current.filter(k => 
@@ -225,6 +227,21 @@ export function useTypingEngine({ text, mode, timeLimit, onComplete }: UseTyping
     // Record keystroke
     const prevTyped = typedRef.current;
     const isBackspace = value.length < prevTyped.length;
+    let newValue = value;
+    
+    // Auto-indent logic for code mode
+    if (isCodeMode && !isBackspace && value[value.length - 1] === '\n') {
+      let nextIndex = value.length;
+      let extraSpaces = "";
+      while (nextIndex < textRef.current.length && textRef.current[nextIndex] === ' ') {
+        extraSpaces += ' ';
+        nextIndex++;
+      }
+      if (extraSpaces) {
+        newValue = value + extraSpaces;
+      }
+    }
+
     const charTyped = isBackspace ? 'Backspace' : value[value.length - 1];
     const expected = textRef.current[value.length - 1] || '';
     
@@ -251,13 +268,13 @@ export function useTypingEngine({ text, mode, timeLimit, onComplete }: UseTyping
     setKeystrokes(prev => [...prev, newKeystroke]);
     keystrokesRef.current.push(newKeystroke);
 
-    setTyped(value);
+    setTyped(newValue);
 
     // Words mode completion
-    if (mode === 'words' && value.length >= textRef.current.length && value === textRef.current) {
+    if (mode === 'words' && newValue.length >= textRef.current.length && newValue === textRef.current) {
       completeTest();
     }
-  }, [status, mode, startTime, completeTest]);
+  }, [status, mode, startTime, completeTest, isCodeMode]);
 
   const reset = useCallback(() => {
     setTyped('');

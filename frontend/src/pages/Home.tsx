@@ -4,8 +4,8 @@ import { TypingArea } from '@/components/typing/TypingArea';
 import { StatsView } from '@/components/typing/StatsView';
 import { ConfigPanel, type ConfigMode, type TestType } from '@/components/typing/ConfigPanel';
 import { TimerDisplay } from '@/components/typing/TimerDisplay';
-import { generateText, getCodeSnippet, type CodeLanguage } from '@/lib/textSamples';
-import { RotateCcw } from 'lucide-react';
+import { fetchGeneratedText, type FetchTextOptions, type CodeLanguage } from '@/lib/textSamples';
+import { RotateCcw, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { api } from '@/lib/axios';
@@ -21,21 +21,34 @@ export default function Home() {
   const [currentText, setCurrentText] = useState('');
   const [showStats, setShowStats] = useState(false);
   const [finalStats, setFinalStats] = useState<TypingStats | null>(null);
-  
+  const [isLoading, setIsLoading] = useState(false);
+
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  const generateNewText = useCallback(() => {
-    if (configMode === 'code') {
-      setCurrentText(getCodeSnippet(codeLanguage));
-    } else {
-      setCurrentText(generateText(wordCount, punctuation, numbers));
+  const generateNewText = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const opts: FetchTextOptions = {
+        mode: configMode,
+        language: codeLanguage,
+        punctuation: punctuation,
+        numbers: numbers,
+        wordCount: testType === 'time' ? 300 : wordCount,
+      };
+      
+      const text = await fetchGeneratedText(opts);
+      setCurrentText(text);
+    } catch (error) {
+      console.error('Text generation error:', error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [configMode, codeLanguage, wordCount, punctuation, numbers]);
+  }, [configMode, codeLanguage, wordCount, punctuation, numbers, testType]);
 
   // Initial text generation
   useEffect(() => {
-    if (!currentText) generateNewText();
-  }, [generateNewText, currentText]);
+    if (!currentText && !isLoading) generateNewText();
+  }, [generateNewText, currentText, isLoading]);
 
   const handleComplete = useCallback(async (stats: TypingStats) => {
     setFinalStats(stats);
@@ -61,6 +74,7 @@ export default function Home() {
     mode: configMode === 'code' && testType === 'words' ? 'words' : testType,
     timeLimit: testType === 'time' ? timeLimit : undefined,
     onComplete: handleComplete,
+    isCodeMode: configMode === 'code',
   }), [currentText, configMode, testType, timeLimit, handleComplete]);
 
   const {
@@ -179,15 +193,28 @@ export default function Home() {
           />
         </div>
 
-        <TypingArea
-          characterStates={characterStates}
-          cursor={cursor}
-          typed={typed}
-          inputRef={inputRef}
-          onInput={handleInput}
-          isCodeMode={configMode === 'code'}
-          status={status}
-        />
+        <div className="relative w-full flex justify-center">
+          {isLoading && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-sm rounded-xl">
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <span className="text-sm font-mono text-muted-foreground animate-pulse">
+                  Generating {configMode === 'code' ? codeLanguage : 'text'}...
+                </span>
+              </div>
+            </div>
+          )}
+          
+          <TypingArea
+            characterStates={characterStates}
+            cursor={cursor}
+            typed={typed}
+            inputRef={inputRef}
+            onInput={handleInput}
+            isCodeMode={configMode === 'code'}
+            status={status}
+          />
+        </div>
 
         {status !== 'finished' && (
           <div className={cn(
