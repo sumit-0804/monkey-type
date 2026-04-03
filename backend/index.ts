@@ -10,8 +10,11 @@ import { startCodeCacheRefill } from './src/services/snippetCache';
 
 const app = express();
 
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+console.log(`Setting up CORS for origin: ${frontendUrl}`);
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: frontendUrl,
     credentials: true,
 }));
 app.use(express.json());

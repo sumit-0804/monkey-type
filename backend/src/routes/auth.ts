@@ -80,10 +80,11 @@ router.post("/google", async (req: Request, res: Response) => {
       process.env.JWT_SECRET as string,
       { expiresIn: "7d" }
     );
+    const isProd = process.env.NODE_ENV === "production";
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax", // 'lax' helps with local development
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -95,10 +96,11 @@ router.post("/google", async (req: Request, res: Response) => {
 });
 
 router.post("/logout", (req: Request, res: Response) => {
+  const isProd = process.env.NODE_ENV === "production";
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
   });
   res.json({ message: "Logged out successfully" });
 });

@@ -5,9 +5,13 @@ import Home from "@/pages/Home"
 import Profile from "@/pages/Profile"
 import Leaderboard from "@/pages/Leaderboard"
 import { useAuthStore } from "@/store/useAuthStore"
+import { useKeepAlive } from "@/hooks/useKeepAlive"
 
 function App() {
   const fetchSession = useAuthStore((state) => state.fetchSession)
+  
+  // Keep backend server alive on Render free tier
+  useKeepAlive(30000)
 
   useEffect(() => {
     fetchSession()
