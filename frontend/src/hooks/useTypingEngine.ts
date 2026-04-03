@@ -100,16 +100,18 @@ export function useTypingEngine({ text, mode, timeLimit, onComplete }: UseTyping
   // Helper to calculate momentary stats (internal use)
   const calculateResultStats = useCallback((currentTyped: string, currentTotalTime: number, currentChartData: WpmDataPoint[], currentKeystrokes: KeystrokeLog[]): TypingStats => {
     const currentText = textRef.current;
-    const correctChars = currentTyped.split('').filter((char, idx) => idx < currentText.length && char === currentText[idx]).length;
-    const incorrectChars = currentTyped.split('').filter((char, idx) => idx < currentText.length && char !== currentText[idx]).length;
-    const extraChars = Math.max(0, currentTyped.length - currentText.length);
+    const finalCorrectChars = currentTyped.split('').filter((char, idx) => idx < currentText.length && char === currentText[idx]).length;
     const missedChars = Math.max(0, currentText.length - currentTyped.length);
-    const totalChars = currentTyped.length;
+
+    const correctKeystrokes = currentKeystrokes.filter(k => k.status === 'correct').length;
+    const incorrectKeystrokes = currentKeystrokes.filter(k => k.status === 'incorrect').length;
+    const extraKeystrokes = currentKeystrokes.filter(k => k.status === 'extra').length;
+    const totalKeystrokes = correctKeystrokes + incorrectKeystrokes + extraKeystrokes;
 
     const timeInMinutes = (currentTotalTime / 1000) / 60;
-    const wpm = timeInMinutes > 0 ? Math.round((correctChars / 5) / timeInMinutes) : 0;
-    const rawWpm = timeInMinutes > 0 ? Math.round((totalChars / 5) / timeInMinutes) : 0;
-    const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
+    const wpm = timeInMinutes > 0 ? Math.round((finalCorrectChars / 5) / timeInMinutes) : 0;
+    const rawWpm = timeInMinutes > 0 ? Math.round((totalKeystrokes / 5) / timeInMinutes) : 0;
+    const accuracy = totalKeystrokes > 0 ? Math.round((correctKeystrokes / totalKeystrokes) * 100) : 100;
 
     // Consistency calculation
     let consistency = 100;
@@ -138,11 +140,11 @@ export function useTypingEngine({ text, mode, timeLimit, onComplete }: UseTyping
       wpm,
       rawWpm,
       accuracy,
-      correctChars,
-      incorrectChars,
-      extraChars,
+      correctChars: correctKeystrokes,
+      incorrectChars: incorrectKeystrokes,
+      extraChars: extraKeystrokes,
       missedChars,
-      totalChars,
+      totalChars: totalKeystrokes,
       timeElapsed: currentTotalTime / 1000,
       consistency,
       chartData: currentChartData,
@@ -226,8 +228,18 @@ export function useTypingEngine({ text, mode, timeLimit, onComplete }: UseTyping
     const charTyped = isBackspace ? 'Backspace' : value[value.length - 1];
     const expected = textRef.current[value.length - 1] || '';
     
-    const status_type = isBackspace ? 'backspace' : (charTyped === expected ? 'correct' : 'incorrect');
-    if (status_type === 'incorrect') errorCountRef.current += 1;
+    let status_type: KeystrokeLog['status'];
+    if (isBackspace) {
+      status_type = 'backspace';
+    } else if (expected === '') {
+      status_type = 'extra';
+    } else if (charTyped === expected) {
+      status_type = 'correct';
+    } else {
+      status_type = 'incorrect';
+    }
+    
+    if (status_type === 'incorrect' || status_type === 'extra') errorCountRef.current += 1;
 
     const newKeystroke: KeystrokeLog = {
       timestamp: now - (startTime || now),

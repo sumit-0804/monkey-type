@@ -98,7 +98,11 @@ export default function Profile() {
 
   return (
     <div className="container max-w-6xl mx-auto px-4 py-12 space-y-12 animate-in fade-in duration-700">
-      <ProfileHeader user={profileUser} isOwnProfile={isOwnProfile} />
+      <ProfileHeader 
+        user={profileUser} 
+        isOwnProfile={isOwnProfile} 
+        onUpdate={(updatedUser) => setProfileUser(updatedUser)}
+      />
       
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-8 space-y-12">

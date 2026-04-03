@@ -110,7 +110,11 @@ export function StatsView({ stats, mode, text, testConfig, onRestart }: StatsVie
         </div>
 
         {/* Center: Chart */}
-        <div className="col-span-12 lg:col-span-10 h-[220px] md:h-[260px] relative z-10 lg:-ml-4">
+        <div 
+          className="col-span-12 lg:col-span-10 h-[220px] md:h-[260px] relative z-10 lg:-ml-4 select-none cursor-default"
+          onMouseDownCapture={(e) => e.preventDefault()}
+          onClickCapture={(e) => e.stopPropagation()}
+        >
           <ChartContainer config={chartConfig} className="h-full w-full">
             <ComposedChart data={stats.chartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.03)" />

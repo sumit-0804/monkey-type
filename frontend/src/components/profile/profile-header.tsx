@@ -1,21 +1,24 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Mail, GraduationCap } from "lucide-react";
+import { EditProfileDialog } from "./edit-profile-dialog";
 
 interface ProfileHeaderProps {
   user: {
     name: string;
     email: string;
     avatarUrl: string;
+    bio?: string;
     degree?: string;
     startYear?: number;
     createdAt: string;
     tags: string[];
   };
   isOwnProfile: boolean;
+  onUpdate?: (updatedUser: any) => void;
 }
 
-export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
+export function ProfileHeader({ user, isOwnProfile, onUpdate }: ProfileHeaderProps) {
   const joinDate = new Date(user.createdAt).toLocaleDateString("en-US", {
     month: "long",
     year: "numeric",
@@ -64,6 +67,11 @@ export function ProfileHeader({ user, isOwnProfile }: ProfileHeaderProps) {
             <Mail className="h-4 w-4" />
             {isOwnProfile ? user.email : "Email hidden"}
           </p>
+          {isOwnProfile && (
+            <div className="pt-2 flex justify-center md:justify-start">
+              <EditProfileDialog user={user} onSuccess={(u) => onUpdate?.(u)} />
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-sm font-medium text-muted-foreground">

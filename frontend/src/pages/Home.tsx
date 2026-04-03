@@ -7,6 +7,8 @@ import { TimerDisplay } from '@/components/typing/TimerDisplay';
 import { generateText, getCodeSnippet, type CodeLanguage } from '@/lib/textSamples';
 import { RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuthStore } from '@/store/useAuthStore';
+import { api } from '@/lib/axios';
 
 export default function Home() {
   const [configMode, setConfigMode] = useState<ConfigMode>('normal');
@@ -19,6 +21,8 @@ export default function Home() {
   const [currentText, setCurrentText] = useState('');
   const [showStats, setShowStats] = useState(false);
   const [finalStats, setFinalStats] = useState<TypingStats | null>(null);
+  
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   const generateNewText = useCallback(() => {
     if (configMode === 'code') {
@@ -33,10 +37,24 @@ export default function Home() {
     if (!currentText) generateNewText();
   }, [generateNewText, currentText]);
 
-  const handleComplete = useCallback((stats: TypingStats) => {
+  const handleComplete = useCallback(async (stats: TypingStats) => {
     setFinalStats(stats);
     setShowStats(true);
-  }, []);
+
+    if (isAuthenticated) {
+      try {
+        await api.post('/results', {
+          wpm: stats.wpm,
+          accuracy: stats.accuracy,
+          mode: configMode === 'code' ? 'code' : testType,
+          language: configMode === 'code' ? codeLanguage : undefined,
+          timeElapsed: Math.floor(stats.timeElapsed),
+        });
+      } catch (error) {
+        console.error('Failed to save test result:', error);
+      }
+    }
+  }, [isAuthenticated, configMode, testType, codeLanguage]);
 
   const engineProps = useMemo(() => ({
     text: currentText,
